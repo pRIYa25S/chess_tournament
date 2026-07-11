@@ -1,10 +1,11 @@
 import pg from 'pg';
 const { Pool } = pg;
 
-import { env } from '$env/dynamic/private';
+// Change 'dynamic' to 'static' right here:
+import { DATABASE_URL } from '$env/static/private';
 
 export const pool = new Pool({
-    connectionString: env.DATABASE_URL,
+    connectionString: DATABASE_URL,
     ssl: {
         rejectUnauthorized: false
     }
