@@ -4,7 +4,7 @@ import { fail } from '@sveltejs/kit';
 export async function load() {
     const res = await pool.query('SELECT id, name, email, rating FROM player ORDER BY id DESC');
     return {
-        players: res.rows || []
+        player: res.rows || []
     };
 }
 
