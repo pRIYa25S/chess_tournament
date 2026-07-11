@@ -1,0 +1,68 @@
+# 🏆 Full-Stack Chess Tournament Management System
+
+A robust, full-stack chess tournament bracket orchestrator, registration portal, and live leaderboard platform built using **SvelteKit (Svelte 5 Runes architecture)**, **Vite**, and **PostgreSQL**.
+
+---
+
+## 🛠️ Tech Stack & Architecture Breakdown
+
+### 🎨 Frontend Architecture
+* **SvelteKit (v2) & Svelte 5 (Runes Mode):** Leverages modern reactivity state management (`$state`, `$props`, and `$effect`) to handle cross-component communication and layout updates smoothly without legacy store boilerplate.
+* **Server-Driven Forms (Progressive Enhancement):** Standardizes HTML form handling using native `method="POST"` actions. It automatically pipes client actions directly to backend endpoints without requiring complex front-end fetch logic.
+* **Dynamic UI Layouts:** Clean, responsive tabular CSS structures built with semantic HTML grid and flex-box layouts to handle dense chess tournament metrics gracefully.
+
+### ⚙️ Backend & Infrastructure Layer
+* **SvelteKit Server Route Actions (`+page.server.js`):** Serve as isolated, secure server endpoints. They handle data validation, execute backend algorithms, and safeguard your secure database infrastructure.
+* **PostgreSQL Relational Engine:** Chosen for its strict transactional handling (ACID compliance), foreign-key relational mappings, and rapid query optimization capabilities.
+* **`pg` Node Connection Pool:** Employs persistent connection pooling (`pool.query`) to maximize scaling efficiency, manage concurrent client requests smoothly, and avoid connection starvation leaks.
+
+---
+
+## 🔄 End-to-End System Workflow
+
+[ Frontend Forms ] ──( Form POST Actions )──> [ SvelteKit Server Endpoints ] ──( SQL Queries )──> [ PostgreSQL DB ]
+▲                                                     │                                          │
+└────────────────( Live Reactive Invalidation )───────┴──────────────( Relational Data Rows )─────┘
+
+1. **Player Onboarding:** The administrator enters a player's name and rating. SvelteKit intercepts the submission, processes an explicit SQL `INSERT`, updates the database row, and reactively refreshes the client roster table.
+2. **Tournament Structuring:** Event parameters (name, location, start, and end dates) are saved inside the `tournament` relational table.
+3. **Relational Assignment (Many-to-Many):** The `registration` mapping table connects specific `player_id` records to target `tournament_id` entries, enforcing database-level relationship tracking.
+4. **Match Pairing Generation:** The engine requests all registered competitor IDs mapped to an active tournament. It runs an round-robin pair loop, matching each player against every other opponent exactly once. It skips repeating matchups dynamically via an `ON CONFLICT DO NOTHING` database filter.
+5. **Score Aggregation:** The Leaderboard performs an associative relational `LEFT JOIN` on the matches table. It counts global metrics dynamically by tracking wins (`winner_id = p.id`) and matches played, sorting ranks instantly by total wins, then by Elo rating.
+
+---
+
+## 🚀 How To Run & Initialize Locally
+
+### 1. Database Table Initialization
+Execute the following script in your local PostgreSQL shell (or pgAdmin) to build out the required schema structures:
+
+```sql
+CREATE TABLE player (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    rating INT NOT NULL
+);
+
+CREATE TABLE tournament (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    location VARCHAR(255) NOT NULL,
+    start_date DATE NOT NULL,
+    end_date DATE NOT NULL
+);
+
+CREATE TABLE registration (
+    id SERIAL PRIMARY KEY,
+    tournament_id INT REFERENCES tournament(id) ON DELETE CASCADE,
+    player_id INT REFERENCES player(id) ON DELETE CASCADE,
+    UNIQUE(tournament_id, player_id)
+);
+
+CREATE TABLE matches (
+    id SERIAL PRIMARY KEY,
+    tournament_id INT REFERENCES tournament(id) ON DELETE CASCADE,
+    player1_id INT REFERENCES player(id) ON DELETE CASCADE,
+    player2_id INT REFERENCES player(id) ON DELETE CASCADE,
+    winner_id INT REFERENCES player(id) ON DELETE SET NULL
+);

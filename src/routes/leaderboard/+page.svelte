@@ -1,5 +1,21 @@
 <script>
     let { data } = $props();
+
+    // Secure Frontend Fallback Sort: Forces wins desc, then breaks ties via Elo rating desc
+    let sortedLeaderboard = $derived(
+        data?.leaderboard ? [...data.leaderboard].sort((a, b) => {
+            const winsA = Number(a.wins || 0);
+            const winsB = Number(b.wins || 0);
+            
+            if (winsB !== winsA) {
+                return winsB - winsA; // Sort by wins first
+            }
+            
+            const ratingA = Number(a.rating || 0);
+            const ratingB = Number(b.rating || 0);
+            return ratingB - ratingA; // Break ties using Elo rating
+        }) : []
+    );
 </script>
 
 <main class="container">
@@ -25,10 +41,22 @@
                 </tr>
             </thead>
             <tbody>
-                {#if data && data.leaderboard && data.leaderboard.length > 0}
-                    {#each data.leaderboard as row, index}
+                {#if sortedLeaderboard.length > 0}
+                    {#each sortedLeaderboard as row, index}
                         <tr>
-                            <td><strong>#{index + 1}</strong></td>
+                            <td>
+                                <strong class="rank-badge">
+                                    {#if index === 0}
+                                        🥇 1
+                                    {:else if index === 1}
+                                        🥈 2
+                                    {:else if index === 2}
+                                        🥉 3
+                                    {:else}
+                                        {index + 1}
+                                    {/if}
+                                </strong>
+                            </td>
                             <td><strong>{row.name}</strong></td>
                             <td>⚡ {row.rating}</td>
                             <td>{row.matches_played || 0}</td>
@@ -53,6 +81,7 @@
     table { width: 100%; border-collapse: collapse; background: #fff; }
     th, td { border: 1px solid #e2e8f0; padding: 14px; text-align: left; }
     th { background: #f1f5f9; color: #475569; }
+    .rank-badge { font-size: 1.05rem; color: #1e293b; }
     .wins-cell { font-weight: bold; color: #16a34a; }
     .alert { background: #fee2e2; color: #991b1b; padding: 1rem; border-radius: 6px; border: 1px solid #fca5a5; }
 </style>
