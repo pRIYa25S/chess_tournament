@@ -1,7 +1,7 @@
-import pkg from 'pg';
-import { env } from '$env/dynamic/private';
+import pg from 'pg';
+const { Pool } = pg;
 
-const { Pool } = pkg;
+import { env } from '$env/dynamic/private';
 
 export const pool = new Pool({
     connectionString: env.DATABASE_URL,
