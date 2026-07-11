@@ -1,11 +1,11 @@
 import pkg from 'pg';
+import { env } from '$env/dynamic/private';
 
 const { Pool } = pkg;
 
 export const pool = new Pool({
-    user: 'postgres',
-    host: 'localhost',
-    database: 'chessdb',
-    password: 'Mani@25.',
-    port: 5432
+    connectionString: env.DATABASE_URL,
+    ssl: {
+        rejectUnauthorized: false
+    }
 });
