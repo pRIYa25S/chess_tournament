@@ -1,9 +1,11 @@
 import pg from 'pg';
 const { Pool } = pg;
 
-// Use the standard process.env which Vercel reads perfectly automatically
+// This is the absolute requirement for runtime variables in SvelteKit
+import { env } from '$env/dynamic/private';
+
 export const pool = new Pool({
-    connectionString: process.env.DATABASE_URL,
+    connectionString: env.DATABASE_URL,
     ssl: {
         rejectUnauthorized: false
     }
