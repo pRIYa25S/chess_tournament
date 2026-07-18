@@ -1,10 +1,16 @@
-import { pool } from '$lib/db.js';
 import { fail } from '@sveltejs/kit';
 
+// A simple local memory array to replace the PostgreSQL table
+let mockPlayers = [
+    { id: 24, name: "Dharshan", email: "dharshan@gmail.com", rating: 2451 },
+    { id: 23, name: "Fabiano Caruana", email: "fabiano@chess.com", rating: 2800 },
+    { id: 22, name: "Hikaru Nakamura", email: "hikaru@chess.com", rating: 2780 }
+];
+
 export async function load() {
-    const res = await pool.query('SELECT id, name, email, rating FROM player ORDER BY id DESC');
+    // Returns the data array directly without calling a database
     return {
-        player: res.rows || []
+        player: mockPlayers
     };
 }
 
@@ -20,18 +26,16 @@ export const actions = {
         if (!name || !email) {
             return fail(400, { error: "Missing required fields." });
         }
-        
-        try {
-            await pool.query(
-                'INSERT INTO player (name, email, rating) VALUES ($1, $2, $3)',
-                [name, email, rating]
-            );
-            return { success: true };
-        } catch (err) {
-            if (err.code === '23505') {
-                return fail(400, { error: "This email address is already registered to another player!" });
-            }
-            return fail(500, { error: "Database error occurred." });
+
+        // Prevent duplicate emails locally
+        if (mockPlayers.some(p => p.email === email)) {
+            return fail(400, { error: "This email address is already registered!" });
         }
+        
+        // Add the new player to our array
+        const newId = mockPlayers.length > 0 ? Math.max(...mockPlayers.map(p => p.id)) + 1 : 1;
+        mockPlayers = [{ id: newId, name, email, rating }, ...mockPlayers];
+
+        return { success: true };
     }
 };

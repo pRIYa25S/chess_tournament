@@ -1,86 +1,219 @@
 <script>
-    import { invalidateAll } from '$app/navigation';
-    
-    // Svelte 5 modern prop declaration
-    let { data, form } = $props();
-
-    // Svelte 5 Replacement for old reactive ($:) statements
-    $effect(() => {
-        if (form && form.success) {
-            invalidateAll();
-        }
-    });
+    export let data;
+    export let form;
 </script>
 
-<main class="container">
-    <h2>👤 Player Registry</h2>
-
-    {#if form && form.error}
-        <div style="background: #fee2e2; color: #991b1b; padding: 1rem; border-radius: 6px; margin-bottom: 1rem; font-weight: bold; border: 1px solid #fca5a5;">
-            ⚠️ {form.error}
-        </div>
+<div class="dashboard-container">
+    <!-- Action Alert Messages -->
+    {#if form?.success}
+        <div class="alert alert-success">🏅 Player registered successfully!</div>
+    {:else if form?.error}
+        <div class="alert alert-danger">⚠️ {form.error}</div>
     {/if}
 
-    {#if form && form.success}
-        <div style="background: #d1fae5; color: #065f46; padding: 1rem; border-radius: 6px; margin-bottom: 1rem; font-weight: bold; border: 1px solid #6ee7b7;">
-            ✅ Player registered successfully!
-        </div>
-    {/if}
-
-    <section class="box">
-        <h3>Enroll New Player</h3>
-        <form method="POST" action="?/create">
-            <div class="form-group">
+    <!-- Enrollment Form Block -->
+    <div class="form-card">
+        <h2>Enroll New Competitor</h2>
+        <form method="POST" action="?/create" class="inline-form">
+            <div class="input-group">
                 <input type="text" name="name" placeholder="Full Name" required />
             </div>
-            <div class="form-group">
+            <div class="input-group">
                 <input type="email" name="email" placeholder="Email Address" required />
             </div>
-            <div class="form-group">
+            <div class="input-group">
                 <input type="number" name="rating" placeholder="Chess Rating (e.g. 1500)" required />
             </div>
-            <button type="submit" class="btn-primary">Register Player</button>
+            <button type="submit" class="btn-submit">Register Player</button>
         </form>
-    </section>
+    </div>
 
-    <h3>Registered Competitors</h3>
-    <table>
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Name</th>
-                <th>Email</th>
-                <th>Rating</th>
-            </tr>
-        </thead>
-        <tbody>
-            {#if data && data.players && data.players.length > 0}
-                {#each data.players as player}
+    <!-- Clean Scannable Grid Table -->
+    <div class="table-card">
+        <h2>Registered Competitors</h2>
+        <div class="table-wrapper">
+            <table>
+                <thead>
                     <tr>
-                        <td>{player.id}</td>
-                        <td><strong>{player.name}</strong></td>
-                        <td>{player.email}</td>
-                        <td>⚡ {player.rating}</td>
+                        <th style="width: 10%">ID</th>
+                        <th style="width: 35%">Name</th>
+                        <th style="width: 35%">Email</th>
+                        <th style="width: 20%">Rating</th>
                     </tr>
-                {/each}
-            {:else}
-                <tr>
-                    <td colspan="4" style="text-align: center; color: #64748b; padding: 2rem;">
-                        No players enrolled yet. Fill out the form above to add your first row!
-                    </td>
-                </tr>
-            {/if}
-        </tbody>
-    </table>
-</main>
+                </thead>
+                <tbody>
+                    {#if data.player && data.player.length > 0}
+                        {#each data.player as p}
+                            <tr>
+                                <td class="bold-id">#{p.id}</td>
+                                <td>{p.name}</td>
+                                <td class="text-muted">{p.email || '—'}</td>
+                                <td><span class="badge-rating">{p.rating}</span></td>
+                            </tr>
+                        {/each}
+                    {:else}
+                        <tr>
+                            <td colspan="4" class="empty-state">No players enrolled yet. Fill out the form above to add your first row!</td>
+                        </tr>
+                    {/if}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
 
 <style>
-    .container { max-width: 800px; margin: 2rem auto; font-family: sans-serif; padding: 0 1rem; }
-    .box { background: #f8fafc; padding: 1.5rem; border-radius: 6px; margin: 1.5rem 0 2rem 0; border: 1px solid #e2e8f0; }
-    .form-group { margin-bottom: 1rem; }
-    input { display: block; width: 100%; max-width: 350px; padding: 0.6rem; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 0.95rem; }
-    table { width: 100%; border-collapse: collapse; margin-top: 1rem; background: #fff; }
-    th, td { border: 1px solid #e2e8f0; padding: 12px; text-align: left; }
-    th { background: #f1f5f9; color: #475569; }
-    .btn-primary { background: #2563eb; color: white; padding: 0.6rem 1.2rem; border: none; font-weight: bold; cursor: pointer; border-radius: 4px; }
+    :global(body) {
+        background-color: #f4f6f9;
+        font-family: 'Segoe UI', system-ui, sans-serif;
+        color: #333;
+        margin: 0;
+        padding: 0;
+    }
+
+    .dashboard-container {
+        max-width: 1100px;
+        margin: 30px auto;
+        padding: 0 20px;
+    }
+
+    h2 {
+        font-size: 1.3rem;
+        margin-top: 0;
+        margin-bottom: 20px;
+        color: #1a202c;
+        font-weight: 600;
+    }
+
+    /* Form Styles */
+    .form-card, .table-card {
+        background: #ffffff;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.03);
+        padding: 24px;
+        margin-bottom: 25px;
+    }
+
+    .inline-form {
+        display: flex;
+        gap: 15px;
+        flex-wrap: wrap;
+        align-items: center;
+    }
+
+    .input-group {
+        flex: 1;
+        min-width: 200px;
+    }
+
+    input {
+        width: 100%;
+        padding: 10px 14px;
+        border: 1px solid #cbd5e1;
+        border-radius: 6px;
+        font-size: 0.95rem;
+        box-sizing: border-box;
+        transition: border-color 0.2s;
+    }
+
+    input:focus {
+        outline: none;
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+    }
+
+    .btn-submit {
+        background-color: #2563eb;
+        color: white;
+        padding: 11px 24px;
+        border: none;
+        border-radius: 6px;
+        font-weight: 600;
+        font-size: 0.95rem;
+        cursor: pointer;
+        transition: background-color 0.2s;
+    }
+
+    .btn-submit:hover {
+        background-color: #1d4ed8;
+    }
+
+    /* Table Styles */
+    .table-wrapper {
+        overflow-x: auto;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        text-align: left;
+        font-size: 0.95rem;
+    }
+
+    th {
+        background-color: #f8fafc;
+        color: #64748b;
+        font-weight: 600;
+        padding: 12px 16px;
+        border-bottom: 2px solid #e2e8f0;
+        text-transform: uppercase;
+        font-size: 0.75rem;
+        letter-spacing: 0.05em;
+    }
+
+    td {
+        padding: 14px 16px;
+        border-bottom: 1px solid #e2e8f0;
+        color: #334155;
+        vertical-align: middle;
+    }
+
+    tr:hover td {
+        background-color: #f8fafc;
+    }
+
+    .bold-id {
+        font-weight: 600;
+        color: #64748b;
+    }
+
+    .text-muted {
+        color: #64748b;
+    }
+
+    .badge-rating {
+        background-color: #eff6ff;
+        color: #1e40af;
+        padding: 4px 10px;
+        border-radius: 9999px;
+        font-weight: 600;
+        font-size: 0.85rem;
+        display: inline-block;
+    }
+
+    .empty-state {
+        text-align: center;
+        color: #94a3b8;
+        padding: 30px 0;
+        font-style: italic;
+    }
+
+    /* Alerts */
+    .alert {
+        padding: 12px 16px;
+        border-radius: 6px;
+        margin-bottom: 20px;
+        font-weight: 500;
+        font-size: 0.95rem;
+    }
+    .alert-success {
+        background-color: #dcfce7;
+        color: #166534;
+        border: 1px solid #bbf7d0;
+    }
+    .alert-danger {
+        background-color: #fee2e2;
+        color: #991b1b;
+        border: 1px solid #fecaca;
+    }
 </style>
