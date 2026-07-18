@@ -1,16 +1,16 @@
 import { fail } from '@sveltejs/kit';
 
-// A simple local memory array to replace the PostgreSQL table
-let mockPlayers = [
+// Static array acting as our production server memory
+let rosterData = [
+    { id: 25, name: "Fabiano Caruana", email: "caruana@chess.com", rating: 2800 },
     { id: 24, name: "Dharshan", email: "dharshan@gmail.com", rating: 2451 },
-    { id: 23, name: "Fabiano Caruana", email: "fabiano@chess.com", rating: 2800 },
-    { id: 22, name: "Hikaru Nakamura", email: "hikaru@chess.com", rating: 2780 }
+    { id: 23, name: "Hikaru Nakamura", email: "hikaru@chess.com", rating: 2780 },
+    { id: 22, name: "Magnus Carlsen", email: "magnus@chess.com", rating: 2882 }
 ];
 
 export async function load() {
-    // Returns the data array directly without calling a database
     return {
-        player: mockPlayers
+        player: rosterData
     };
 }
 
@@ -27,14 +27,16 @@ export const actions = {
             return fail(400, { error: "Missing required fields." });
         }
 
-        // Prevent duplicate emails locally
-        if (mockPlayers.some(p => p.email === email)) {
+        // Check for duplicate emails inside our temporary memory tier
+        if (rosterData.some(p => p.email.toLowerCase() === email.toLowerCase())) {
             return fail(400, { error: "This email address is already registered!" });
         }
         
-        // Add the new player to our array
-        const newId = mockPlayers.length > 0 ? Math.max(...mockPlayers.map(p => p.id)) + 1 : 1;
-        mockPlayers = [{ id: newId, name, email, rating }, ...mockPlayers];
+        // Generate a new sequential structural row ID
+        const nextId = rosterData.length > 0 ? Math.max(...rosterData.map(p => p.id)) + 1 : 1;
+        
+        // Push cleanly to the top of the timeline array
+        rosterData = [{ id: nextId, name, email, rating }, ...rosterData];
 
         return { success: true };
     }

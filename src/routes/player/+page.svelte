@@ -45,21 +45,21 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {#if players.length > 0}
-                        {#each players as p}
-                            <tr>
-                                <td class="bold-id">#{p.id}</td>
-                                <td>{p.name}</td>
-                                <td class="text-muted">{p.email || '—'}</td>
-                                <td><span class="badge-rating">{p.rating}</span></td>
-                            </tr>
-                        {/each}
-                    {:else}
-                        <tr>
-                            <td colspan="4" class="empty-state">No players enrolled yet. Fill out the form above to add your first row!</td>
-                        </tr>
-                    {/if}
-                </tbody>
+    {#if competitors.length > 0}
+        {#each competitors as p}
+            <tr>
+                <td class="bold-id">#{p.id}</td>
+                <td>{p.name}</td>
+                <td class="text-muted">{p.email}</td>
+                <td><span class="badge-rating">{p.rating}</span></td>
+            </tr>
+        {/each}
+    {:else}
+        <tr>
+            <td colspan="4" class="empty-state">No players enrolled yet.</td>
+        </tr>
+    {/if}
+</tbody>
             </table>
         </div>
     </div>
