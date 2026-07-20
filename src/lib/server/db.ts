@@ -1,11 +1,7 @@
-import pkg from 'pg';
+import { env } from '$env/dynamic/private';
+import pg from 'pg';
 
-const { Pool } = pkg;
-
-export const pool = new Pool({
-    user: 'postgres',
-    host: 'localhost',
-    database: 'chessdb',
-    password: 'Mani@25.',
-    port: 5432
+export const db = new pg.Pool({
+    connectionString: env.DATABASE_URL,
+    ssl: { rejectUnauthorized: false }
 });
