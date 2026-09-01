@@ -1,6 +1,6 @@
 <nav class="global-header">
     <a href="/">🏠 Home</a> | 
-    <a href="/player">👤 Players</a> | 
+    <a href="/players">👤 Players</a> | 
     <a href="/tournament">🏆 Tournaments</a> | 
     <a href="/registration">📝 Registration</a> | 
     <a href="/match">⚔️ Match Center</a> | 
