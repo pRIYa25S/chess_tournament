@@ -1,13 +1,13 @@
-export async function load() {
-    const staticRoster = [
-        { id: 25, name: "Fabiano Caruana", email: "caruana@chess.com", rating: 2800 },
-        { id: 24, name: "Dharshan", email: "dharshan@gmail.com", rating: 2451 },
-        { id: 23, name: "Hikaru Nakamura", email: "hikaru@chess.com", rating: 2780 }
-    ];
+import pool from '$lib/db';
 
-    return { 
-        players: staticRoster 
-    };
+export async function load() {
+    try {
+        const { rows } = await pool.query('SELECT * FROM players ORDER BY id DESC');
+        return { players: rows };
+    } catch (error) {
+        console.error('Database fetch error:', error);
+        return { players: [] };
+    }
 }
 
 export const actions = {
@@ -15,9 +15,17 @@ export const actions = {
         const formData = await request.formData();
         const name = formData.get('name');
         const email = formData.get('email');
-        const rating = formData.get('rating');
+        const rating = parseInt(formData.get('rating'), 10);
 
-        // Form processing logic here
-        return { success: true };
+        try {
+            await pool.query(
+                'INSERT INTO players (name, email, rating) VALUES ($1, $2, $3)',
+                [name, email, rating]
+            );
+            return { success: true };
+        } catch (error) {
+            console.error('Database insert error:', error);
+            return { success: false, error: error.message };
+        }
     }
 };
