@@ -2,6 +2,7 @@ import pool from '$lib/db';
 
 export async function load() {
     try {
+        // Fetch all players ordered by latest ID
         const { rows } = await pool.query('SELECT * FROM players ORDER BY id DESC');
         return { players: rows };
     } catch (error) {
@@ -18,6 +19,7 @@ export const actions = {
         const rating = parseInt(formData.get('rating'), 10);
 
         try {
+            // Save newly enrolled competitor into Neon PostgreSQL
             await pool.query(
                 'INSERT INTO players (name, email, rating) VALUES ($1, $2, $3)',
                 [name, email, rating]
