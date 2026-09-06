@@ -5,6 +5,7 @@
     <a href="/registration">📝 Registration</a> | 
     <a href="/match">⚔️ Match Center</a> | 
     <a href="/leaderboard">🥇 Standings</a>
+    
 </nav>
 
 <slot />
