@@ -6,7 +6,7 @@ export async function load() {
     ];
 
     return { 
-        player: staticRoster 
+        players: staticRoster  // <-- MATCHES data.players in +page.svelte
     };
 }
 
