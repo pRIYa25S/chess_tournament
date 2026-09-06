@@ -1,3 +1,7 @@
+// src/routes/player/+page.js
+export const prerender = true;
+export const ssr = true;
+
 export async function load() {
     const staticRoster = [
         { id: 25, name: "Fabiano Caruana", email: "caruana@chess.com", rating: 2800 },
@@ -6,12 +10,6 @@ export async function load() {
     ];
 
     return { 
-        players: staticRoster  // <-- MATCHES data.players in +page.svelte
+        players: staticRoster 
     };
 }
-
-export const actions = {
-    create: async () => {
-        return { success: true };
-    }
-};
