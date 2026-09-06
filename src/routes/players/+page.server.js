@@ -1,7 +1,3 @@
-// src/routes/player/+page.js
-export const prerender = true;
-export const ssr = true;
-
 export async function load() {
     const staticRoster = [
         { id: 25, name: "Fabiano Caruana", email: "caruana@chess.com", rating: 2800 },
@@ -13,3 +9,15 @@ export async function load() {
         players: staticRoster 
     };
 }
+
+export const actions = {
+    default: async ({ request }) => {
+        const formData = await request.formData();
+        const name = formData.get('name');
+        const email = formData.get('email');
+        const rating = formData.get('rating');
+
+        // Form processing logic here
+        return { success: true };
+    }
+};

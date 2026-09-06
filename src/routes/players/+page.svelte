@@ -12,8 +12,7 @@
         ✅ Player enrolled successfully!
       </div>
     {/if}
-
-    <form method="POST" class="form-grid">
+    <form method="POST" action="?/" class="form-grid">
       <div class="form-group">
         <label for="name">Full Name</label>
         <input type="text" id="name" name="name" placeholder="e.g. Garry Kasparov" required />
