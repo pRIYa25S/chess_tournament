@@ -1,4 +1,4 @@
-import pool from '$lib/server/db.ts';
+import pool from '$lib/server/db';
 export async function load() {
     try {
         const { rows } = await pool.query('SELECT * FROM players ORDER BY id DESC');
