@@ -5,3 +5,5 @@ export const db = new pg.Pool({
     connectionString: env.DATABASE_URL,
     ssl: { rejectUnauthorized: false }
 });
+
+export default db;
